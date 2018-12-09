@@ -1,0 +1,63 @@
+'use strict';
+/*wxopen - yiluomyt*/
+/**
+ * {{&description}}
+ * @class {{&className}}
+ * @param {string} [domain] - The project domain
+ */
+export default class {{&className}} {
+
+    constructor(domain){
+        this.domain = domain !== undefined ? domain : 'http://localhost:5000';
+        if(this.domain.length === 0) {
+            throw new Error('Domain must be specified as a string.');
+        }
+        this.authenticate = function() {
+            return new Promise((resolve, reject) => {
+                reject(new Error('Please Set authenticate First.'));
+            })
+        };
+    }
+
+    /**
+    * Set authenticate method
+    * @method
+    * @name {{&className}}#setAuthenticate
+    * @param {function} auth - authenticate method
+    */
+    setAuthenticate(auth) {
+        this.authenticate = auth;
+    }
+
+    /**
+    * HTTP Request
+    * @method
+    * @name {{&className}}#request
+    * @param {string} method - HTTP 请求方法
+    * @param {string} url - 开发者服务器接口地址
+    * @param {object} data - 请求的参数
+    * @param {object} headers - 设置请求的 header ,默认为 application/json
+    */
+    request(method, url, parameters, data, headers){
+        return new Promise((resolve, reject) => {
+            wx.request({
+                url: url,
+                data: data,
+                header: headers,
+                method: method,
+                success: res => {
+                    if(res.statusCode >= 200 && res.statusCode <= 299) {
+                        resolve(res.data)
+                    } else {
+                        reject(res)
+                    }
+                },
+                fail: e => reject(e)
+            })
+        })
+    };
+
+    {{#methods}}
+        {{> method}}
+    {{/methods}}
+}

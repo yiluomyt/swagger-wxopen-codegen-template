@@ -1,0 +1,90 @@
+/**
+ * {{&summary}}
+ * @method
+ * @name {{&className}}#{{&methodName}}
+ * @param {object} parameters - method options and parameters
+{{#parameters}}
+  {{^isSingleton}} * @param {{=<% %>=}}{<%&type%>}<%={{ }}=%> parameters.{{&camelCaseName}} - {{&description}}{{/isSingleton}}
+{{/parameters}}
+ */
+{{&methodName}}(parameters){
+    if(parameters === undefined) {
+        parameters = {};
+    }
+    let domain = this.domain, path = '{{&path}}';
+    let data = {}, headers = {};
+
+    {{#headers}}
+        headers['{{&name}}'] = {{&value}};
+    {{/headers}}
+
+    {{#parameters}}
+        {{#isQueryParameter}}
+        {{#isSingleton}}
+            data['{{&name}}'] = '{{&singleton}}';
+        {{/isSingleton}}
+        {{^isSingleton}}
+            {{#isPatternType}}
+            Object.keys(parameters).forEach(function(parameterName) {
+                if(new RegExp('{{&pattern}}').test(parameterName)){
+                data[parameterName] = parameters[parameterName];
+                }
+            });
+            {{/isPatternType}}
+            {{#default}}
+            /** set default value **/
+            data['{{&name}}'] = {{&default}};
+            {{/default}}
+
+            {{^isPatternType}}
+            if(parameters['{{&camelCaseName}}'] !== undefined){
+                data['{{&name}}'] = parameters['{{&camelCaseName}}'];
+            }
+            {{/isPatternType}}
+        {{/isSingleton}}
+        {{/isQueryParameter}}
+        
+        {{#isPathParameter}}
+        path = path.replace('{{=<% %>=}}{<%&name%>}<%={{ }}=%>', parameters['{{&camelCaseName}}']);
+        {{/isPathParameter}}
+        
+        {{#isHeaderParameter}}
+        {{#isSingleton}}
+            headers['{{&name}}'] = '{{&singleton}}';
+        {{/isSingleton}}
+        {{^isSingleton}}
+            if(parameters['{{&camelCaseName}}'] !== undefined){
+            headers['{{&name}}'] = parameters['{{&camelCaseName}}'];
+            }
+        {{/isSingleton}}
+        {{/isHeaderParameter}}
+        
+        {{#isBodyParameter}}
+        if(parameters['{{&camelCaseName}}'] !== undefined){
+            data = parameters['{{&camelCaseName}}'];
+        }
+        {{/isBodyParameter}}
+
+        {{#required}}
+        if(parameters['{{&camelCaseName}}'] === undefined){
+            return new Promise((resolve, reject) => {
+                reject(new Error('Missing required {{&paramType}} parameter: {{&camelCaseName}}'));
+            });
+        }
+        {{/required}}
+
+    {{/parameters}}
+
+    {{#isSecure}}
+        return new Promise((resolve, reject) => {
+            this.authenticate()
+            .then(token => {
+                headers['Authorization'] = 'Bearer ' + token;
+                resolve(this.request('{{method}}', domain + path, parameters, data, headers))
+            })
+        })
+    {{/isSecure}}
+    {{^isSecure}}
+        return this.request('{{method}}', domain + path, parameters, data, headers);
+    {{/isSecure}}
+ };

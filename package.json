@@ -1,0 +1,29 @@
+{
+  "name": "swagger-wxopen-codegen-template",
+  "version": "1.0.0",
+  "description": "This a demo for use swagger-js-codegen to generate wxchat miniprogram API lib.",
+  "main": "index.js",
+  "scripts": {
+    "build": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yiluomyt/swagger-wxopen-codegen-template.git"
+  },
+  "keywords": [
+    "swagger",
+    "wxopen",
+    "api",
+    "codegen"
+  ],
+  "author": "yiluomyt",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yiluomyt/swagger-wxopen-codegen-template/issues"
+  },
+  "homepage": "https://github.com/yiluomyt/swagger-wxopen-codegen-template#readme",
+  "devDependencies": {
+    "request": "^2.88.0",
+    "swagger-js-codegen": "^1.12.0"
+  }
+}
